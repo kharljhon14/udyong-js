@@ -1,3 +1,4 @@
+import { removeEventListeners } from './events';
 import { DOM_TYPES } from './h';
 
 export function destroyDOM(vdom) {
@@ -18,4 +19,26 @@ export function destroyDOM(vdom) {
   }
 
   delete vdom.el;
+}
+
+function removeTextNode(vdom) {
+  const { el } = vdom;
+  el.remove();
+}
+
+function removeElementNode(vdom) {
+  const { el, children, listeners } = vdom;
+
+  el.remove();
+  children.forEach(destroyDOM);
+
+  if (listeners) {
+    removeEventListeners(listeners, el);
+    delete vdom.listeners;
+  }
+}
+
+function removeFragmentNode(vdom) {
+  const { children } = vdom;
+  children.forEach(destroyDOM);
 }
